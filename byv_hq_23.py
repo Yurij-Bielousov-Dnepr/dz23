@@ -54,13 +54,15 @@ def menu():
                             1.1 Текущая 
                             1.2 Средняя """)
             case "1.1":
-                lock_data.acquire()
+                lock1.acquire()
                  # последняя запись в файле
                 # открыть файл, прочитать последнюю запись выделить параметр
                 temp = data["temperature"]
+
                 humidity = data["humidity"]
+
                 print(f"Текущая температура: {temp} ℃, текущая влажность: {humidity}")
-                lock_data.release()
+                lock1.release()
             case "1.2":
                 ... # среднее 6 последних записей
                 # открыть файл, прочитать 6 записей найти среднее параметра
