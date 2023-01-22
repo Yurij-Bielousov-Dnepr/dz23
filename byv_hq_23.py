@@ -66,8 +66,11 @@ def menu():
             case "1.2":
                 ... # среднее 6 последних записей
                 # открыть файл, прочитать 6 записей найти среднее параметра
-                with open('condition.json', 'r') as file:
-                    file.readline('t2 '+ str(i) + '\n')
+                with open('condition.log', 'r') as file:
+                    list_range=[]
+                    for i in range(5):
+                        file.readline()
+                        # list_range.append() 
             case "2":
                 print(""" Вы находитесь в меню Счетчики, уточните свой выбор
                             2.1 Электроенергия:  показания счетчика & текущий расход
