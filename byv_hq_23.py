@@ -23,6 +23,7 @@
 # в видt JSON (формат в файле example.json).
 # Полученные данные с добавленным дата/время сохраняются в файле (любой формат файла). 
 # При возникновении Event отправляет запросы на сервер (ссылка позже на GitHub) 
+import datetime
 import  datatime, time
 import threading, requests
 import json, pickle
@@ -86,7 +87,7 @@ def menu():
             case "2.2":
                 ...# Газ показания счетчика, текущий расход
             # открыть файл, прочитать последнюю запись, выделить параметры
-                lock_data.acquire()
+                lock1.acquire()
                 gas = reqwest()["meter"]["gas"]["consumption"]
                 print(f"споживання електроенергії: {gas} ㎥")
                 lock1.release()
@@ -105,12 +106,12 @@ def menu():
             case "3.1":
                 ...#Котел Состояние
             # открыть файл, прочитать последнюю запись, выделить параметр
-                lock_data.acquire()
+                lock1.acquire()
                 if reqwest()['boiler']['isRun'] == False:
                     print("Болер off!")
                 if reqwest()['boiler']['isRun'] = True:
                     print("Болер включён!")
-                lock_data.release()
+                lock1.release()
                 ev1.set()
                 ev1.wait()
                 ev1.clear()
@@ -126,6 +127,7 @@ def menu():
             # открыть файл, прочитать последнюю запись, выделить параметр
             # проверить состояние изменить если было выключено
                 lock1.acquire()
+                
                         if reqwest()['boiler']['isRun'] == False:
                             reqwest()['boiler']['isRun'] = True
                             print("Болер выключен!")
@@ -140,16 +142,17 @@ def menu():
                 lock1.release()
             case "4":
                 ...# все записи из файла
+                lock1.acquire()
                 with open('condition.log', 'r') as file:
                     file.readline('t2 '+ str(i) + '\n')
             # открыть файл, прочитать все записи и раскодировать их через формат
                 time = str(datetime.datetime.now())
-                with open("data.txt", "a")as file:
+                
                 lock1.release()
-ev1.set()
-ev1.wait()
-ev1.clear()
-if ev1.wait(0):
+# ev1.set()
+# ev1.wait()
+# ev1.clear()
+# if ev1.wait(0):
 
 #     f = open("img.png", 'wb')
 #     f.write(resp.content)
@@ -164,12 +167,12 @@ def reqwest():
         global data
         resp = requests.get("http://localhost:8000/cgi-bin/index.py")
         if resp.status_code == 200:
-            lock.acquire()
+            lock1.acquire()
             data=json.loads(resp.text) 
             time=str(datetime.datetime.now())
             with open('condition.log', 'w') as file:
                     file.write(time + '\n' + str(data) )
-            lock.release()
+            lock1.release()
         time.sleep(5)
         if ev1.wait(3):
             ev1.wait()
