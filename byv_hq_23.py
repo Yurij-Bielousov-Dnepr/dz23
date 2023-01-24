@@ -23,8 +23,7 @@
 # в видt JSON (формат в файле example.json).
 # Полученные данные с добавленным дата/время сохраняются в файле (любой формат файла). 
 # При возникновении Event отправляет запросы на сервер (ссылка позже на GitHub) 
-import datetime
-import  datatime, time
+import  datetime, time
 import threading, requests
 import json, pickle
 
@@ -109,14 +108,12 @@ def menu():
                 lock1.acquire()
                 if reqwest()['boiler']['isRun'] == False:
                     print("Болер off!")
-                if reqwest()['boiler']['isRun'] = True:
+                if reqwest()['boiler']['isRun'] == True:
                     print("Болер включён!")
                 lock1.release()
-                ev1.set()
-                ev1.wait()
-                ev1.clear()
-                if ev1.wait(0):
-                    reqwest()
+                # ev1.set()
+                # if ev1.wait():
+                #     reqwest()
                 with open('condition.json', 'r') as file:
                     file.readline('t2 '+ str(i) + '\n')
                 print(" ",boiler_condition)
@@ -126,18 +123,19 @@ def menu():
                 ...#Включить
             # открыть файл, прочитать последнюю запись, выделить параметр
             # проверить состояние изменить если было выключено
+                ev1.set()
                 lock1.acquire()
-                
-                        if reqwest()['boiler']['isRun'] == False:
-                            reqwest()['boiler']['isRun'] = True
-                            print("Болер выключен!")
+                if reqwest()['boiler']['isRun'] == False:
+                    reqwest()['boiler']['isRun'] = True
+                    print("Болер выключен!")
                 lock1.release()
             case "3.3":
             # открыть файл, прочитать последнюю запись, выделить параметр
             # проверить состояние изменить если было включено
+                ev1.set()
                 lock1.acquire()
                 if reqwest()['boiler']['isRun'] == True:
-                    reqwest()['boiler']['isRun'] = False
+                    reqwest_write()['boiler']['isRun'] = False
                     print("Болер выключен!")
                 lock1.release()
             case "4":
@@ -157,6 +155,20 @@ def menu():
 #     f = open("img.png", 'wb')
 #     f.write(resp.content)
 #     f.close()
+def reqwest_json():
+        global data
+        resp = requests.get("http://localhost:8000/cgi-bin/condition_json.py")
+        if resp.status_code == 200:
+            lock1.acquire()
+            data=json.loads('condition.json') # !!!!
+            lock1.release()
+            return data
+def reqwest_write(data):
+    with open('D:\pyton23\BYV_PYThON_23_HQ_23\condition.json', 'w') as file:
+        lock1.acquire()
+        data.write(file)
+        lock1.release()
+
 
 def reqwest():
     #  Каждые 5 секунд отправляются GET запросы на сервер (ссылка позже на GitHub) и принимается ответ 
@@ -164,27 +176,16 @@ def reqwest():
 # Полученные данные с добавленным дата/время сохраняются в файле (любой формат файла). 
 # При возникновении Event отправляет запросы на сервер (ссылка позже на GitHub) 
     while True:
-        global data
-        resp = requests.get("http://localhost:8000/cgi-bin/index.py")
-        if resp.status_code == 200:
-            lock1.acquire()
-            data=json.loads(resp.text) 
-            time=str(datetime.datetime.now())
-            with open('condition.log', 'w') as file:
-                    file.write(time + '\n' + str(data) )
-            lock1.release()
+        reqwest_json()
         time.sleep(5)
-        if ev1.wait(3):
-            ev1.wait()
+        if ev1.wait():
+            reqwest_json()
+            time.sleep(2)
             ev1.clear()
-
-    resp = requests.get(request)
-    if response.status_code == 200:
-        data = json.loads(response.text)
-        datarPickle = pickle.dumps(weather)
-
-        temp= int(data["temperature"] ,["humidity"])
-    return data
+        time=str(datetime.datetime.now())
+        with open('condition.log', 'a') as file:
+                    file.write(time + '\n' + str(data) )
+        return data
 
 
 th1 = threading.Thread(target=menu) # создаем первый поток
